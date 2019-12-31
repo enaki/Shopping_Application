@@ -7,6 +7,7 @@ from GUI_Pages.HomePage import HomePage
 from GUI_Pages.ShopPage import ShopPage
 from GUI_Pages.ShippingPage import ShippingPage
 from GUI_Pages.ProductPage import ProductPage
+from GUI_Pages.AdvancedAdminPage import AdvancedAdminPage
 import logging as log
 import sys
 
@@ -29,25 +30,25 @@ class BdGui(tk.Tk):
         self.user_info = {}
 
         self.frames = {}
-        for F in (HomePage, ShopPage, ProductPage, ShippingPage, LoginPage, SignUpPage):
+        for F in (HomePage, ShopPage, ProductPage, ShippingPage, LoginPage, SignUpPage, AdvancedAdminPage):
             page_name = F.__name__
             frame = F(parent=self.container, controller=self)
             self.frames[page_name] = frame
             frame.grid(row=0, column=0, sticky="nesw")
-
-        self.show_frame('HomePage')
+        self.show_frame('LoginPage')
 
     def re_create_frames(self):
         for frame in self.frames.values():
             for widget in frame.winfo_children():
                 widget.destroy()
-        for F in (HomePage, ShopPage, ProductPage, ShippingPage, LoginPage, SignUpPage):
+        for F in (HomePage, ShopPage, ProductPage, ShippingPage, LoginPage, SignUpPage, AdvancedAdminPage):
             page_name = F.__name__
             frame = F(parent=self.container, controller=self)
             self.frames[page_name] = frame
             frame.grid(row=0, column=0, sticky="nesw")
         self.show_frame('HomePage')
         log.info("Recreate Frames succesfully")
+
 
     def show_frame(self, name):
         frame = self.frames[name]

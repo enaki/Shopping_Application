@@ -1,3 +1,5 @@
+from tkinter import ttk
+
 from GUI_Pages.BasicPage import BasicPage
 from GUI_utilities.TableFrame import TableFrame
 import tkinter as tk
@@ -84,13 +86,21 @@ class ShippingPage(BasicPage):
         self.max_price_name_search = tk.Entry(max_price_search_frame)
         self.max_price_name_search.grid(row=0, column=1, padx=5, pady=5)
 
-        tk.Button(self.search_frame, text='Search By Price Range', command=self.search_price_range, bg='light cyan',
-                  fg='red').grid(row=4, column=0, padx=5, pady=5)
+        option_search_frame = tk.LabelFrame(self.search_frame, bg='gray94')
+        option_search_frame.grid(row=4, column=0, pady=5, padx=5, sticky='ew')
+        self.search_by_product_id = tk.IntVar()
+        ttk.Checkbutton(option_search_frame, text="Shipping Id", variable=self.search_by_product_id,
+                        command=self.on_check_product_id).grid(row=0, column=0, padx=5, pady=5)
+        tk.Button(option_search_frame, text='Search By Price Range', command=self.search_price_range, bg='light cyan',
+                  fg='red').grid(row=0, column=1, padx=5, pady=5)
+
+    def on_check_product_id(self):
+        pass
 
     def search_for_provider_equal(self, provider):
         provider = provider.replace('\'', '\'\'')
-        query = "SELECT shipping_id, provider, delivering_price from shipping_methods where provider='{}'".format(
-            provider)
+        query = "SELECT shipping_id, provider, delivering_price from shipping_methods where lower(provider)='{}'".format(
+            provider.lower())
         query_select = self.controller.run_query(query)
         return query_select
 
@@ -102,13 +112,26 @@ class ShippingPage(BasicPage):
 
     def search_provider(self):
         log.info("Search_Provider Shipping Page")
-        self.table.clear_table()
-        name = self.shipping_name_search.get()
-        if name == '':
-            self.populate_the_table_with_all_values()
+        if self.search_by_product_id.get():
+            name = self.shipping_name_search.get()
+            if not name.isdigit():
+                from tkinter import messagebox
+                messagebox.showinfo("Search Error", "Shipping Id invalid")
+                return
+            else:
+                query = "SELECT shipping_id, provider, delivering_price from shipping_methods where shipping_id={}".format(name)
+                query_select = self.controller.run_query(query)
+                self.table.clear_table()
+                for row in query_select:
+                    self.table.insert('', 'end', values=row)
         else:
-            for row in self.search_for_provider_like(name):
-                self.table.insert('', 'end', values=row)
+            self.table.clear_table()
+            name = self.shipping_name_search.get()
+            if name == '':
+                self.populate_the_table_with_all_values()
+            else:
+                for row in self.search_for_provider_like(name):
+                    self.table.insert('', 'end', values=row)
 
     def search_price(self):
         log.info("Search_Price Shipping Page")
@@ -120,7 +143,7 @@ class ShippingPage(BasicPage):
         else:
             if not self.is_number(price):
                 from tkinter import messagebox
-                messagebox.showinfo("Insert Error", "Price MIN is not number")
+                messagebox.showinfo("Insert Error", "Price is not number")
                 return
             query = "SELECT shipping_id, provider, delivering_price from shipping_methods where delivering_price={}".format(price)
             query_select = self.controller.run_query(query)
@@ -223,6 +246,10 @@ class ShippingPage(BasicPage):
 
     def delete(self):
         log.info("Delete Shipping Page")
+        if not self.table.is_item_selected():
+            from tkinter import messagebox
+            messagebox.showinfo("Delete Error", "Item not selected")
+            return
         name = self.shipping_name_delete_var.get()
 
         name = name.replace('\'', '\'\'')
@@ -235,6 +262,7 @@ class ShippingPage(BasicPage):
             messagebox.showinfo("Delete Error", "Can't delete shop because orders are present")
             return
         self.populate_the_table_with_all_values()
+        self.controller.frames["HomePage"].update_buy()
 
     def is_empty(self, provider, price):
         from tkinter import messagebox
@@ -248,14 +276,18 @@ class ShippingPage(BasicPage):
     def provider_exists(self, provider):
         from tkinter import messagebox
         if self.search_for_provider_equal(provider):
-            messagebox.showinfo("Insert Error", "Shop already exists")
+            messagebox.showinfo("Insert Error", "Shipping Method already exists")
             return True
         return False
 
     def insert(self):
         log.info("Insert Shipping Page")
-        name = self.shipping_provider_update.get()
-        price = self.price_update.get()
+        name = self.shipping_name_insert.get()
+        if not self.string_length_is_okay(name, text='Shipping Provider', length=100):
+            return
+        name = name.strip()
+
+        price = self.price_insert.get()
 
         if self.is_empty(name, price) or self.provider_exists(name):
             return
@@ -269,20 +301,24 @@ class ShippingPage(BasicPage):
         insert_query = "INSERT INTO shipping_methods (provider, delivering_price) VALUES ('{}', {})".format(name, price)
         self.controller.run_query(insert_query)
         self.populate_the_table_with_all_values()
-
-    def is_number(self, number):
-        import re
-        return bool(re.match(r"[\d]+(.\d)?[\d]*", number))
+        self.controller.frames["HomePage"].update_buy()
 
     def update(self):
         log.info("Update Shipping Page")
+        if not self.table.is_item_selected():
+            from tkinter import messagebox
+            messagebox.showinfo("Update Error", "Item not selected")
+            return
         name = self.shipping_provider_update.get()
+        if not self.string_length_is_okay(name, text='Shipping Provider', length=100):
+            return
+        name = name.strip()
         price = self.price_update.get()
 
         if self.is_empty(name, price):
             return
 
-        print(price)
+        log.info("Update provider {} to price {}".format(name, price))
         if not self.is_number(price):
             from tkinter import messagebox
             messagebox.showinfo("Insert Error", "Price is not number")
@@ -294,6 +330,7 @@ class ShippingPage(BasicPage):
         insert_query = "UPDATE shipping_methods set provider = '{}', delivering_price = {} where provider='{}'".format(name, price, old_name)
         self.controller.run_query(insert_query)
         self.populate_the_table_with_all_values()
+        self.controller.frames["HomePage"].update_buy()
 
     def populate_the_table_with_all_values(self):
         self.table.clear_table()

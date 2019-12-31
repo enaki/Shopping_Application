@@ -79,12 +79,12 @@ class SignUpPage(TitlePage):
 
         tk.Label(sign_up_label_frame, text='Password', font=self.text_font, bg=sign_up_label_frame['bg'], fg='red',
                  width=width_label).grid(row=8, column=0, padx=5, pady=10)
-        self.password_entry = tk.Entry(sign_up_label_frame, width=width_entry)
+        self.password_entry = tk.Entry(sign_up_label_frame, show="*", width=width_entry)
         self.password_entry.grid(row=8, column=1, padx=5, pady=10)
 
         tk.Label(sign_up_label_frame, text='Retype Password', font=self.text_font, bg=sign_up_label_frame['bg'], fg='red',
                  width=width_label).grid(row=9, column=0, padx=5, pady=10)
-        self.re_password_entry = tk.Entry(sign_up_label_frame, width=width_entry)
+        self.re_password_entry = tk.Entry(sign_up_label_frame, show="*", width=width_entry)
         self.re_password_entry.grid(row=9, column=1, padx=5, pady=10)
 
         tk.Label(sign_up_label_frame, text='User Level', font=self.text_font, bg=sign_up_label_frame['bg'],
@@ -195,9 +195,47 @@ class SignUpPage(TitlePage):
         re_password = self.re_password_entry.get()
         user_level = self.user_level.get()
 
+        if not self.string_length_is_okay(last_name, text='Last Name'):
+            return
+        last_name = last_name.strip()
+        if not self.string_length_is_okay(first_name, text='First Name'):
+            return
+        first_name = first_name.strip()
+        if not self.string_length_is_okay(phone, text='Phone'):
+            return
+        phone = phone.strip()
+        if not self.string_length_is_okay(email, text='Email', length=30):
+            return
+        email = email.strip()
+        if not self.string_length_is_okay(country, text='Country Name', length=30):
+            return
+        country = country.strip()
+        if not self.string_length_is_okay(city, text='City Name', length=30):
+            return
+        city = city.strip()
+        if not self.string_length_is_okay(street_address, text='Street Address', length=50):
+            return
+        street_address = street_address.strip()
+        if not self.string_length_is_okay(username, text='Username', length=30):
+            return
+        username = username.strip()
+
+        if not self.string_length_is_okay(password, text='Password', length=30):
+            return
+        if not self.string_length_is_okay(user_level, text='User Level', length=10):
+            return
+
         if self.fields_are_empty(first_name, last_name, phone, email, country, city, street_address, username, password, re_password):
             return
         if not self.validate_fields(phone, email, username, password, re_password):
+            return
+        if not self.is_word_letters_and_spaces(country):
+            from tkinter import messagebox
+            messagebox.showinfo("Country Name Error", "Country Name should contains only letters and spaces")
+            return
+        if not self.is_word_letters_and_spaces(city):
+            from tkinter import messagebox
+            messagebox.showinfo("City Name Error", "City Name should contains only letters and spaces")
             return
         location_id = self.insert_or_get_location(street_address, city, country)
         last_name = last_name.replace('\'', '\'\'')

@@ -8,6 +8,7 @@ import sys
 FORMAT = '[%(asctime)s] [%(levelname)s] : %(message)s'
 log.basicConfig(stream=sys.stdout, level=log.DEBUG, format=FORMAT)
 
+
 class TitlePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent, bg=parent['bg'])
@@ -31,9 +32,44 @@ class TitlePage(tk.Frame):
             row=0, column=1, sticky='w')
 
     @staticmethod
-    def is_number(number):
+    def is_word_letters_and_spaces(string):
+        if all(x.isalpha() or x.isspace() for x in string):
+            return True
+        return False
+
+    def is_user_in_db(self, user_id):
+        query = "SELECT user_id from app_users where user_id={}".format(user_id)
+        return bool(self.controller.run_query(query))
+
+    def session_is_allright(self):
+        if not self.controller.user_info or not self.is_user_in_db(self.controller.user_info['user_id']):
+            from tkinter import messagebox
+            messagebox.showinfo("Account Error", "User invalid. We are sorry! Bye")
+            self.controller.show_frame('LoginPage')
+            return False
+        return True
+
+    @staticmethod
+    def is_number(number, min_range=0, max_range=1000_000, zero_permited=False):
         import re
+        try:
+            number_temp = float(number)
+            if zero_permited and number_temp == 0:
+                return True
+            if number_temp <= min_range or number_temp >= max_range:
+                return False
+        except ValueError:
+            return False
         return bool(re.match(r"[\d]+(.\d)?[\d]*", number))
+
+    @staticmethod
+    def string_length_is_okay(string, length=20, text='String'):
+        if len(string) <= length:
+            return True
+        else:
+            from tkinter import messagebox
+            messagebox.showinfo("String Size Error", "{} length should be lower than {}".format(text, length))
+            return False
 
     def get_countries(self):
         query = "SELECT unique(country) from locations"
@@ -59,8 +95,8 @@ class TitlePage(tk.Frame):
         street = street.replace('\'', '\'\'')
         city = city.replace('\'', '\'\'')
         country = country.replace('\'', '\'\'')
-        location_id_query = "SELECT location_id from locations where street_address='{}' and city='{}' and country='{}'".format(
-            street, city, country)
+        location_id_query = "SELECT location_id from locations where lower(street_address)='{}' and lower(city)='{}' and lower(country)='{}'".format(
+            street.lower(), city.lower(), country.lower())
         query_select = self.controller.run_query(location_id_query)
         if not query_select:
             location_id_query = "INSERT INTO locations (street_address, city, country) VALUES ('{}', '{}', '{}')".format(
@@ -84,21 +120,33 @@ class BasicPage(TitlePage):
         for i in range(4):
             change_page_frame.grid_columnconfigure(i, weight=1)
 
-        self.button_home = tk.Button(change_page_frame, text="Home", bg=button_bg, fg=button_fg, font=self.button_font, command=lambda: self.controller.show_frame('HomePage'))
+        self.button_home = tk.Button(change_page_frame, text="Home", bg=button_bg, fg=button_fg, font=self.button_font, command=self.on_home_button)
         self.button_home.grid(row=0, column=0, padx=5, pady=5, sticky='ew')
 
-        self.button_shop = tk.Button(change_page_frame, text="Shops", bg=button_bg, fg=button_fg, font=self.button_font, command=lambda: self.controller.show_frame('ShopPage'))
+        self.button_shop = tk.Button(change_page_frame, text="Shops", bg=button_bg, fg=button_fg, font=self.button_font, command=self.on_shop_button)
         self.button_shop.grid(row=0, column=1, padx=5, pady=5, sticky='ew')
 
-        self.button_product = tk.Button(change_page_frame, text="Products", bg=button_bg, fg=button_fg, font=self.button_font, command=lambda: self.controller.show_frame('ProductPage'))
+        self.button_product = tk.Button(change_page_frame, text="Products", bg=button_bg, fg=button_fg, font=self.button_font, command=self.on_product_button)
         self.button_product.grid(row=0, column=2, padx=5, pady=5, sticky='ew')
 
-        self.button_shipping = tk.Button(change_page_frame, text="Shipping", bg=button_bg, fg=button_fg, font=self.button_font, command=lambda: self.controller.show_frame('ShippingPage'))
+        self.button_shipping = tk.Button(change_page_frame, text="Shipping", bg=button_bg, fg=button_fg, font=self.button_font, command=self.on_shipping_button)
         self.button_shipping.grid(row=0, column=3, padx=5, pady=5, sticky='ew')
 
     @abc.abstractmethod
     def populate_the_table_with_all_values(self):
         pass
+
+    def on_home_button(self):
+        self.controller.show_frame('HomePage')
+
+    def on_shop_button(self):
+        self.controller.show_frame('ShopPage')
+
+    def on_product_button(self):
+        self.controller.show_frame('ProductPage')
+
+    def on_shipping_button(self):
+        self.controller.show_frame('ShippingPage')
 
 
 

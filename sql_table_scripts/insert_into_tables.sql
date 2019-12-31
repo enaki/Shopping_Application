@@ -107,7 +107,8 @@ INSERT INTO orders (user_id, shipping_id, product_id, quantity, total_amount) VA
         (select shop_id from shops s, locations l where s.shop_name = 'SA Covoare Ungheni' AND l.location_id = s.location_id AND l.street_address = 'Str. Mihai Eminescu' AND l.city = 'Ungheni' AND l.country='Republica Moldova')),
     2, 
     2 * (select price from products where product_name='Covor Modern Vintage' and shop_id = 
-        (select shop_id from shops, locations l where shop_name = 'SA Covoare Ungheni' AND l.location_id = shops.location_id AND l.street_address = 'Str. Mihai Eminescu' AND l.city = 'Ungheni' AND l.country='Republica Moldova')));
+        (select shop_id from shops, locations l where shop_name = 'SA Covoare Ungheni' AND l.location_id = shops.location_id AND l.street_address = 'Str. Mihai Eminescu' AND l.city = 'Ungheni' AND l.country='Republica Moldova'))
+        +(SELECT delivering_price from shipping_methods where provider='Fedex' and delivering_price=65));
 
 INSERT INTO orders (user_id, shipping_id, product_id, quantity, total_amount) VALUES
     ((SELECT user_id from app_users where email='andrei.dorcu@yahoo.com'),
@@ -116,7 +117,8 @@ INSERT INTO orders (user_id, shipping_id, product_id, quantity, total_amount) VA
         (select shop_id from shops s, locations l where s.shop_name = 'SA Covoare Ungheni' AND l.location_id = s.location_id AND l.street_address = 'Str. Mihai Eminescu' AND l.city = 'Ungheni' AND l.country='Republica Moldova')),
     1, 
     1 * (select price from products where product_name='Covor Traditional' and shop_id = 
-        (select shop_id from shops s, locations l where shop_name = 'SA Covoare Ungheni' AND l.location_id = s.location_id AND l.street_address = 'Str. Mihai Eminescu' AND l.city = 'Ungheni' AND l.country='Republica Moldova')));
+        (select shop_id from shops s, locations l where shop_name = 'SA Covoare Ungheni' AND l.location_id = s.location_id AND l.street_address = 'Str. Mihai Eminescu' AND l.city = 'Ungheni' AND l.country='Republica Moldova'))
+        + (SELECT delivering_price from shipping_methods where provider='Fedex' and delivering_price=65));
 
 INSERT INTO orders (user_id, shipping_id, product_id, quantity, total_amount) VALUES
     ((SELECT user_id from app_users where email='andrei.dorcu@yahoo.com'),
@@ -125,7 +127,8 @@ INSERT INTO orders (user_id, shipping_id, product_id, quantity, total_amount) VA
         (select shop_id from shops s, locations l where l.location_id = s.location_id AND s.shop_name = 'Emag' AND l.street_address = 'Str. Plopilor' and l.city = 'Cluj-Napoca' AND l.country='Romania')),
     3, 
     3 * (select price from products where product_name='Geanta Dell' and shop_id =
-        (select shop_id from shops s, locations l where l.location_id = s.location_id AND s.shop_name = 'Emag' AND l.street_address = 'Str. Plopilor' and l.city = 'Cluj-Napoca' AND l.country='Romania')));
+        (select shop_id from shops s, locations l where l.location_id = s.location_id AND s.shop_name = 'Emag' AND l.street_address = 'Str. Plopilor' and l.city = 'Cluj-Napoca' AND l.country='Romania'))
+        + (SELECT delivering_price from shipping_methods where provider='Singapore Post' and delivering_price=5));
 
 INSERT INTO orders (user_id, shipping_id, product_id, quantity, total_amount) VALUES
     ((SELECT user_id from app_users where email='alina.nanu@yahoo.com'),
@@ -134,7 +137,8 @@ INSERT INTO orders (user_id, shipping_id, product_id, quantity, total_amount) VA
         (select shop_id from shops s, locations l where l.location_id = s.location_id AND s.shop_name = 'Emag' AND l.street_address = 'Str. Plopilor' and l.city = 'Cluj-Napoca' AND l.country='Romania')),
     3, 
     3 * (select price from products where product_name='Apple Stand' and shop_id =
-        (select shop_id from shops s, locations l where l.location_id = s.location_id AND s.shop_name = 'Emag' AND l.street_address = 'Str. Plopilor' and l.city = 'Cluj-Napoca' AND l.country='Romania')));
+        (select shop_id from shops s, locations l where l.location_id = s.location_id AND s.shop_name = 'Emag' AND l.street_address = 'Str. Plopilor' and l.city = 'Cluj-Napoca' AND l.country='Romania'))
+        + (SELECT delivering_price from shipping_methods where provider='Fedex' and delivering_price=65));
 
 
 INSERT INTO orders (user_id, shipping_id, product_id, quantity, total_amount) VALUES
@@ -144,7 +148,8 @@ INSERT INTO orders (user_id, shipping_id, product_id, quantity, total_amount) VA
         (select shop_id from shops s, locations l where l.location_id = s.location_id AND  shop_name = 'Emag' AND s.location_id = l.location_id AND l.street_address = 'Str. Plopilor' and l.city = 'Cluj-Napoca' AND l.country='Romania')),
     1, 
     1 * (SELECT product_id from products where product_name='Boxa JBL2 GO' and shop_id =
-    (select shop_id from shops s, locations l where l.location_id = s.location_id AND  shop_name = 'Emag' AND s.location_id = l.location_id AND l.street_address = 'Str. Plopilor' and l.city = 'Cluj-Napoca' AND l.country='Romania')));
+    (select shop_id from shops s, locations l where l.location_id = s.location_id AND  shop_name = 'Emag' AND s.location_id = l.location_id AND l.street_address = 'Str. Plopilor' and l.city = 'Cluj-Napoca' AND l.country='Romania'))
+    +(SELECT delivering_price from shipping_methods where provider='DHL' and delivering_price=25));
    
 SELECT * FROM locations;
 SELECT * FROM shops;
@@ -153,5 +158,5 @@ SELECT * FROM app_users;
 SELECT * FROM accounts;
 SELECT * FROM orders;
 
-COMMIT
+COMMIT;
 

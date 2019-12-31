@@ -220,6 +220,11 @@ class ShopPage(BasicPage):
 
     def delete(self):
         log.info("Delete Shop Page")
+        if not self.table.is_item_selected():
+            from tkinter import messagebox
+            messagebox.showinfo("Delete Error", "Item not selected")
+            return
+
         shop_name = self.shop_name_var.get().replace('\'', '\'\'')
         street = self.street_name_var.get().replace('\'', '\'\'')
         city = self.city_name_var.get().replace('\'', '\'\'')
@@ -255,7 +260,7 @@ class ShopPage(BasicPage):
         city_name_temp = city_name.replace('\'', '\'\'')
         country_name_temp = country_name.replace('\'', '\'\'')
         query = "SELECT shop_id, shop_name, street_address, city, country from shops s, locations l where s.location_id = l.location_id and " \
-                "s.shop_name='{}'and l.street_address = '{}' and l.city = '{}' and l.country = '{}'".format(shop_name_temp, street_name_temp, city_name_temp, country_name_temp)
+                "lower(s.shop_name)='{}'and lower(l.street_address) = '{}' and lower(l.city) = '{}' and lower(l.country) = '{}'".format(shop_name_temp.lower(), street_name_temp.lower(), city_name_temp.lower(), country_name_temp.lower())
         query_select = self.controller.run_query(query)
         return query_select
 
@@ -303,16 +308,46 @@ class ShopPage(BasicPage):
 
     def insert(self):
         log.info("Insert Shop Page")
+
         shop_name = self.shop_name_insert.get()
+        if not self.string_length_is_okay(shop_name, text='Shop Name'):
+            return
+        shop_name = shop_name.strip()
+
         street = self.street_name_insert.get()
+        if not self.string_length_is_okay(street, text='Street Address', length=50):
+            return
+        street = street.strip()
+
         city = self.city_name_insert.get()
+        if not self.string_length_is_okay(city, text='City Name', length=30):
+            return
+        city = city.strip()
+
         country = self.country_name_insert.get()
+        if not self.string_length_is_okay(country, text='Country Name', length=30):
+            return
+        country = country.strip()
 
         if self.is_empty(shop_name, street, city, country):
             return
+
+        if not self.is_word_letters_and_spaces(country):
+            from tkinter import messagebox
+            messagebox.showinfo("Country Name Error", "Country Name should contains only letters and spaces")
+            return
+        if not self.is_word_letters_and_spaces(city):
+            from tkinter import messagebox
+            messagebox.showinfo("City Name Error", "City Name should contains only letters and spaces")
+            return
+
         shop_name = shop_name.replace('\'', '\'\'')
 
         location_id = self.insert_or_get_location(street, city, country)
+        if self.shop_exists(shop_name, location_id):
+            from tkinter import messagebox
+            messagebox.showinfo("Insert Error", "Shop Already Exists")
+            return
 
         insert_query = "INSERT INTO shops (shop_name, location_id) VALUES ('{}', '{}')".format(shop_name, location_id)
         self.controller.run_query(insert_query)
@@ -320,18 +355,54 @@ class ShopPage(BasicPage):
 
     def update(self):
         log.info("Update Shop Page")
+
+        if not self.table.is_item_selected():
+            from tkinter import messagebox
+            messagebox.showinfo("Update Error", "Item not selected")
+            return
+
         shop_name = self.shop_name_update_entry.get()
+        if not self.string_length_is_okay(shop_name, text='Shop Name'):
+            return
+        shop_name = shop_name.strip()
+
         street = self.street_name_update_entry.get()
+        if not self.string_length_is_okay(street, text='Street Address', length=50):
+            return
+        street = street.strip()
+
         city = self.city_name_update_entry.get()
+        if not self.string_length_is_okay(city, text='City Name', length=30):
+            return
+        city = city.strip()
+
         country = self.country_name_update_entry.get()
+        if not self.string_length_is_okay(country, text='Country Name', length=30):
+            return
+        country = country.strip()
+
         if shop_name == self.shop_name_var.get() and street == self.street_name_var.get() and city == self.city_name_var.get() and country == self.country_name_var.get():
             return
         if self.is_empty(shop_name, street, city, country):
             return
 
+        if not self.is_word_letters_and_spaces(country):
+            from tkinter import messagebox
+            messagebox.showinfo("Country Name Error", "Country Name should contains only letters and spaces")
+            return
+        if not self.is_word_letters_and_spaces(city):
+            from tkinter import messagebox
+            messagebox.showinfo("City Name Error", "City Name should contains only letters and spaces")
+            return
+
         location_id = self.insert_or_get_location(street, city, country)
 
         shop_name = shop_name.replace('\'', '\'\'')
+
+        if self.shop_exists(shop_name, location_id):
+            from tkinter import messagebox
+            messagebox.showinfo("Insert Error", "Shop Already Exists")
+            return
 
         shop_name_to_delete = self.shop_name_var.get().replace('\'', '\'\'')
         street_to_delete = self.street_name_var.get().replace('\'', '\'\'')
@@ -410,3 +481,9 @@ class ShopPage(BasicPage):
             "SELECT shop_id, shop_name, street_address, city, country from {} s, {} l where s.location_id = l.location_id".format('shops', 'locations'))
         for row in query_select:
             self.table.insert('', 'end', values=row)
+
+    def shop_exists(self, shop_name, location_id):
+        query_select = self.controller.run_query(
+            "SELECT shop_id from shops s where lower(s.shop_name) = '{}' and s.location_id = {}".format(
+                shop_name.lower(), location_id))
+        return bool(query_select)

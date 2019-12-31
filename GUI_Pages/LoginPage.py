@@ -37,7 +37,7 @@ class LoginPage(TitlePage):
 
         tk.Label(login_label_frame, text='password', font=text_font, bg=login_label_frame['bg'], fg='red',
                  width=width_label).grid(row=1, column=0, padx=5, pady=10)
-        self.password_entry = tk.Entry(login_label_frame, width=width_entry)
+        self.password_entry = tk.Entry(login_label_frame, show="*", width=width_entry)
         self.password_entry.grid(row=1, column=1, padx=5, pady=10)
 
         self.login_button = tk.Button(login_label_frame, text='Login', font=button_font, command=self.on_login, bg='gray', fg='white')

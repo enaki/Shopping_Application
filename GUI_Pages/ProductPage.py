@@ -31,7 +31,8 @@ class ProductPage(BasicPage):
         self.init_update_frame(viewer_frame)
         self.init_delete_frame(viewer_frame)
 
-        columns_names = list(map("".join, self.controller.get_columns_name('products')))
+        columns_names = ['PRODUCT ID', 'PRODUCT NAME', 'PRICE', 'SHOP ID', 'DESCRIPTION']
+        print(columns_names)
         self.table = TableFrame(viewer_frame, columns_names)
         self.table.grid(row=2, column=0, columnspan=4, sticky="nesw", padx=5, pady=5)
         self.populate_the_table_with_all_values()
@@ -105,11 +106,11 @@ class ProductPage(BasicPage):
         product = product.replace('\'', '\'\'')
         description = description.replace('\'', '\'\'')
         if description != 'None' and description != '':
-            query = "SELECT product_id, product_name, price, shop_id, description from products where product_name='{}' and price={} and shop_id={} and description='{}'".format(
-                product, price, shop_id, description)
+            query = "SELECT product_id, product_name, price, shop_id, description from products where lower(product_name)='{}' and price={} and shop_id={} and lower(description)='{}'".format(
+                product.lower(), price, shop_id, description.lower())
         else:
-            query = "SELECT product_id, product_name, price, shop_id, description from products where product_name='{}' and price={} and shop_id={} and description is NULL".format(
-                product, price, shop_id)
+            query = "SELECT product_id, product_name, price, shop_id, description from products where lower(product_name)='{}' and price={} and shop_id={} and description is NULL".format(
+                product.lower(), price, shop_id)
         query_select = self.controller.run_query(query)
         return query_select
 
@@ -177,13 +178,13 @@ class ProductPage(BasicPage):
         if price_min == '' and price_max == '':
             self.populate_the_table_with_all_values()
         else:
-            if not self.is_number(price_min):
+            if not self.is_number(price_min, zero_permited=True):
                 from tkinter import messagebox
-                messagebox.showinfo("Insert Error", "Price MIN is not number")
+                messagebox.showinfo("Insert Error", "Price MIN is not a valid number")
                 return
-            if not self.is_number(price_max):
+            if not self.is_number(price_max, zero_permited=True):
                 from tkinter import messagebox
-                messagebox.showinfo("Insert Error", "Price MAX is not number")
+                messagebox.showinfo("Insert Error", "Price MAX is not a valid number")
                 return
             if price_min == '':
                 price_min = '0'
@@ -306,6 +307,11 @@ class ProductPage(BasicPage):
 
     def delete(self):
         log.info("Delete product Page")
+        if not self.table.is_item_selected():
+            from tkinter import messagebox
+            messagebox.showinfo("Delete Error", "Item not selected")
+            return
+
         name = self.product_name_delete_var.get().replace('\'', '\'\'')
         if not name:
             return
@@ -326,6 +332,7 @@ class ProductPage(BasicPage):
             messagebox.showinfo("Delete Error", "Can't delete shop because orders are present")
             return
         self.populate_the_table_with_all_values()
+        self.controller.frames["HomePage"].update_buy()
 
     def fields_are_empty(self, name, price, shop_id):
         from tkinter import messagebox
@@ -348,10 +355,18 @@ class ProductPage(BasicPage):
 
     def insert(self):
         log.info("Insert product Page")
-        name = self.product_name_insert.get()
         price = self.price_insert.get()
         shop_id = self.shop_id_insert.get()
+
+        name = self.product_name_insert.get()
+        if not self.string_length_is_okay(name, text='Product Name'):
+            return
+        name = name.strip()
+
         description = self.description_insert.get()
+        if not self.string_length_is_okay(description, text='Description Name', length=100):
+            return
+        description = description.strip()
 
         if not self.is_number(price):
             from tkinter import messagebox
@@ -375,15 +390,30 @@ class ProductPage(BasicPage):
         insert_query = "INSERT INTO products (product_name, price, shop_id, description) VALUES ('{}', {}, {}, '{}')".format(name, price, shop_id, description)
         self.controller.run_query(insert_query)
         self.populate_the_table_with_all_values()
+        self.controller.frames["HomePage"].update_buy()
 
     def update(self):
         log.info("Update product Page")
-        name = self.product_name_update.get()
+        if not self.table.is_item_selected():
+            from tkinter import messagebox
+            messagebox.showinfo("Update Error", "Item not selected")
+            return
+
         price = self.price_update.get()
         shop_id = self.shop_id_update.get()
-        description = self.description_update.get()
 
-        if self.fields_are_empty(name, price, shop_id):
+        name = self.product_name_update.get()
+        if not self.string_length_is_okay(name, text='Product Name'):
+            return
+        name = name.strip()
+
+        description = self.description_update.get()
+        if not self.string_length_is_okay(description, text='Description Name', length=100):
+            return
+        description = description.strip()
+
+
+        if self.fields_are_empty(name, price, shop_id) or self.product_exists(name, price, shop_id, description):
             return
 
         if not self.is_number(price):
@@ -417,6 +447,7 @@ class ProductPage(BasicPage):
                 name, price, shop_id, description, old_name, old_price, old_shop_id)
         self.controller.run_query(update_query)
         self.populate_the_table_with_all_values()
+        self.controller.frames["HomePage"].update_buy()
 
     def populate_the_table_with_all_values(self):
         self.table.clear_table()

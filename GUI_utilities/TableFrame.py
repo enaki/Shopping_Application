@@ -56,13 +56,26 @@ class TableFrame(tk.Frame):
                   background=fixed_map('background'))
         style.configure("Treeview.Heading", foreground='green', font=font)
 
+    def is_float(self, element):
+        try:
+            float(element)
+            return True
+        except ValueError:
+            return False
+
+
+    def my_func(self, tuple):
+        return float(tuple[0])
+
     def sort_by(self, tree: ttk.Treeview, col, descending):
         # Sort tree contents when a column is clicked on.
         # grab values to sort
         data = [(tree.set(child, col), child) for child in tree.get_children('')]
-
         # reorder data
-        data.sort(reverse=descending)
+        if data and self.is_float(data[0][0]):
+            data.sort(reverse=descending, key=self.my_func)
+        else:
+            data.sort(reverse=descending)
         num = 'Even'
         for indx, item in enumerate(data):
             tree.move(item[1], '', indx)
@@ -102,18 +115,8 @@ class TableFrame(tk.Frame):
     def clear_table(self):
         self.tree.delete(*self.tree.get_children())
 
-if __name__=='__main__':
-    root = tk.Tk()
-    root.geometry("1024x768")
-    root.wm_title('Table View as a Table')
-
-    table = TableFrame(root, ['First Name', 'Last Name', 'Gender'])
-    table.pack(fill='both', expand=1)
-
-    for i in range(4):
-        name = str(i) + 'ghita'
-        last_name = 'jora'+str(abs(i-2))
-        gender = 'm'+str(i)
-        table.insert('', 'end', values=(name, last_name, gender))
-
-    root.mainloop()
+    def is_item_selected(self):
+        selected_item = self.tree.selection()
+        if selected_item:
+            return True
+        return False
