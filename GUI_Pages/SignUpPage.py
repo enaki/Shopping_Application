@@ -5,6 +5,7 @@ import logging as log
 import sys
 
 from GUI_Pages.BasicPage import TitlePage
+from GUI_utilities.Cipher import Cipher
 
 FORMAT = '[%(asctime)s] [%(levelname)s] : %(message)s'
 log.basicConfig(stream=sys.stdout, level=log.DEBUG, format=FORMAT)
@@ -95,10 +96,10 @@ class SignUpPage(TitlePage):
         self.user_level.current(0)
         self.user_level.grid(row=10, column=1, padx=5, pady=10)
 
-        self.sign_up_button = tk.Button(sign_up_label_frame, text='Submit', font=self.button_font, command=self.on_sign_up, bg='gray', fg='white')
+        self.sign_up_button = tk.Button(sign_up_label_frame, text='Submit', font=self.button_font, command=self.on_sign_up, bg='green', fg='white')
         self.sign_up_button.grid(row=11, column=1, padx=5, pady=5)
 
-        self.back_button = tk.Button(sign_up_frame, text='Back', font=self.title_font, command=self.on_back, bg='gray', fg='white')
+        self.back_button = tk.Button(sign_up_frame, text='Back', font=self.title_font, command=self.on_back, bg='red', fg='white')
         self.back_button.grid(row=2, column=0, padx=15, pady=15, sticky='w')
 
     def country_combo_update(self, event):
@@ -220,7 +221,7 @@ class SignUpPage(TitlePage):
             return
         username = username.strip()
 
-        if not self.string_length_is_okay(password, text='Password', length=30):
+        if not self.string_length_is_okay(password, text='Password', length=100):
             return
         if not self.string_length_is_okay(user_level, text='User Level', length=10):
             return
@@ -237,6 +238,14 @@ class SignUpPage(TitlePage):
             from tkinter import messagebox
             messagebox.showinfo("City Name Error", "City Name should contains only letters and spaces")
             return
+        if not self.is_word_letters_and_spaces(first_name):
+            from tkinter import messagebox
+            messagebox.showinfo("First Name Error", "First Name should contains only letters and spaces")
+            return
+        if not self.is_word_letters_and_spaces(last_name):
+            from tkinter import messagebox
+            messagebox.showinfo("Last Name Error", "Last Name should contains only letters and spaces")
+            return
         location_id = self.insert_or_get_location(street_address, city, country)
         last_name = last_name.replace('\'', '\'\'')
         first_name = first_name.replace('\'', '\'\'')
@@ -248,7 +257,15 @@ class SignUpPage(TitlePage):
         query = "INSERT INTO app_users (first_name, last_name, location_id, email, phone) VALUES ('{}', '{}', {}, '{}', '{}')".format(first_name, last_name, location_id, email, phone)
         self.controller.run_query(query)
         user_id = self.get_user_id_by_email(self.email_entry.get())
-        print(user_id)
+        log.info("User Id Created : {}".format(user_id))
+
+        # -------Use encryption when sending data across internet
+        pass_encrypted = Cipher.encrypt(password)
+        log.info("Password encrypted: {}".format(pass_encrypted.decode()))
+        password = Cipher.decrypt(pass_encrypted)
+        # log.info("Password decrypted: {}".format(password))
+        # end encryption and decryption part
+
         query = "INSERT INTO accounts (user_id, username, password, account_type) VALUES ({}, '{}', '{}', '{}')".format(user_id[0], username, password, user_level)
         self.controller.run_query(query)
         from tkinter import messagebox

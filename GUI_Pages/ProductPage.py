@@ -32,7 +32,6 @@ class ProductPage(BasicPage):
         self.init_delete_frame(viewer_frame)
 
         columns_names = ['PRODUCT ID', 'PRODUCT NAME', 'PRICE', 'SHOP ID', 'DESCRIPTION']
-        print(columns_names)
         self.table = TableFrame(viewer_frame, columns_names)
         self.table.grid(row=2, column=0, columnspan=4, sticky="nesw", padx=5, pady=5)
         self.populate_the_table_with_all_values()

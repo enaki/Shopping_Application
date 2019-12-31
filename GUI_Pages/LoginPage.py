@@ -5,6 +5,7 @@ import logging as log
 import sys
 
 from GUI_Pages.BasicPage import TitlePage
+from GUI_utilities.Cipher import Cipher
 
 FORMAT = '[%(asctime)s] [%(levelname)s] : %(message)s'
 log.basicConfig(stream=sys.stdout, level=log.DEBUG, format=FORMAT)
@@ -40,10 +41,10 @@ class LoginPage(TitlePage):
         self.password_entry = tk.Entry(login_label_frame, show="*", width=width_entry)
         self.password_entry.grid(row=1, column=1, padx=5, pady=10)
 
-        self.login_button = tk.Button(login_label_frame, text='Login', font=button_font, command=self.on_login, bg='gray', fg='white')
+        self.login_button = tk.Button(login_label_frame, text='Login', font=button_font, command=self.on_login, bg='green', fg='white')
         self.login_button.grid(row=2, column=1, padx=5, pady=5)
 
-        self.sign_up_button = tk.Button(login_label_frame, text='Sign Up', font=button_font, command=self.on_sign_up, bg='gray', fg='white')
+        self.sign_up_button = tk.Button(login_label_frame, text='Sign Up', font=button_font, command=self.on_sign_up, bg='blue', fg='white')
         self.sign_up_button.grid(row=2, column=0, padx=5, pady=5)
 
     def set_states(self, user_level):
@@ -75,6 +76,13 @@ class LoginPage(TitlePage):
     def on_login(self):
         username = self.username_entry.get().replace('\'', '\'\'')
         password = self.password_entry.get().replace('\'', '\'\'')
+
+        #-------Use encryption when sending data across internet
+        pass_encrypted = Cipher.encrypt(password)
+        log.info("Password encrypted: {}".format(pass_encrypted.decode()))
+        password = Cipher.decrypt(pass_encrypted)
+        #log.info("Password decrypted: {}".format(password))
+        #end encryption and decryption part
 
         query = "SELECT u.user_id, u.first_name, u.last_name, u.location_id, u.email, u.phone, a.account_type from app_users u, accounts a where u.user_id = a.user_id and a.username='{}' and a.password='{}'".format(username, password)
         user_info = [item for t in self.controller.run_query(query) for item in t]

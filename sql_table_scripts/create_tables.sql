@@ -48,7 +48,7 @@ CREATE TABLE app_users(
 CREATE TABLE accounts(
     user_id NUMBER(4) NOT NULL,
     username VARCHAR2(30) NOT NULL UNIQUE,
-    password VARCHAR2(30) NOT NULL,
+    password VARCHAR2(100) NOT NULL,
     account_type VARCHAR2(10) NOT NULL,
     CONSTRAINT account_user_id_fk FOREIGN KEY(user_id) REFERENCES app_users
 );
