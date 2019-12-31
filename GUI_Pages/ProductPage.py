@@ -4,7 +4,7 @@ import tkinter as tk
 import logging as log
 import sys
 
-from GUI_utilities.TableFrame import TableFrame
+from Utilities.TableFrame import TableFrame
 
 FORMAT = '[%(asctime)s] [%(levelname)s] : %(message)s'
 log.basicConfig(stream=sys.stdout, level=log.DEBUG, format=FORMAT)

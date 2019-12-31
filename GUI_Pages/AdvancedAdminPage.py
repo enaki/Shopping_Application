@@ -1,7 +1,7 @@
 from GUI_Pages.BasicPage import TitlePage
 import tkinter as tk
 from tkinter import font as tkfont, messagebox
-from GUI_utilities.TableFrame import TableFrame
+from Utilities.TableFrame import TableFrame
 import logging as log
 import sys
 

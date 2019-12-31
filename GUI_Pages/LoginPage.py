@@ -5,7 +5,7 @@ import logging as log
 import sys
 
 from GUI_Pages.BasicPage import TitlePage
-from GUI_utilities.Cipher import Cipher
+from Utilities.Cipher import Cipher
 
 FORMAT = '[%(asctime)s] [%(levelname)s] : %(message)s'
 log.basicConfig(stream=sys.stdout, level=log.DEBUG, format=FORMAT)

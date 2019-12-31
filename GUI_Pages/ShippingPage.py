@@ -1,7 +1,7 @@
 from tkinter import ttk
 
 from GUI_Pages.BasicPage import BasicPage
-from GUI_utilities.TableFrame import TableFrame
+from Utilities.TableFrame import TableFrame
 import tkinter as tk
 
 import logging as log

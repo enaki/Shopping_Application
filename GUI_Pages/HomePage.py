@@ -4,7 +4,7 @@ from GUI_Pages.BasicPage import BasicPage
 import tkinter as tk
 from tkinter import font as tkfont
 
-from GUI_utilities.TableFrame import TableFrame
+from Utilities.TableFrame import TableFrame
 
 
 class HomePage(BasicPage):
