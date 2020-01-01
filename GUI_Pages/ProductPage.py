@@ -411,10 +411,6 @@ class ProductPage(BasicPage):
             return
         description = description.strip()
 
-
-        if self.fields_are_empty(name, price, shop_id) or self.product_exists(name, price, shop_id, description):
-            return
-
         if not self.is_number(price):
             from tkinter import messagebox
             messagebox.showinfo("Insert Error", "Price is not number")
@@ -426,6 +422,9 @@ class ProductPage(BasicPage):
         if not self.exist_shop_id(shop_id):
             from tkinter import messagebox
             messagebox.showinfo("Insert Error", "Shop Id does not exist")
+            return
+
+        if self.fields_are_empty(name, price, shop_id) or self.product_exists(name, price, shop_id, description):
             return
 
         old_name = self.product_name_delete_var.get().replace('\'', '\'\'')

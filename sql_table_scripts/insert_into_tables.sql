@@ -100,7 +100,7 @@ INSERT INTO accounts (user_id, username, password, account_type) VALUES ((SELECT
 INSERT INTO accounts (user_id, username, password, account_type) VALUES ((SELECT user_id from app_users where email='mihai.heghea@yahoo.com'), 'mihai', 'heghea', 'client');
 INSERT INTO accounts (user_id, username, password, account_type) VALUES ((SELECT user_id from app_users where email='petru.petrica@yahoo.com'), 'petru', 'petrica', 'client');
 INSERT INTO accounts (user_id, username, password, account_type) VALUES ((SELECT user_id from app_users where email='andrei.dorcu@yahoo.com'), 'andrei', 'dorcu0', 'client');
-INSERT INTO accounts (user_id, username, password, account_type) VALUES ((SELECT user_id from app_users where email='anisoara.nanu@yahoo.com'), 'anisoara', 'nanu_e_mai_slab_ca_viorel', 'admin_shop');
+INSERT INTO accounts (user_id, username, password, account_type) VALUES ((SELECT user_id from app_users where email='anisoara.nanu@yahoo.com'), 'anisoara', 'i_like_to_destroy_things', 'admin');
 INSERT INTO accounts (user_id, username, password, account_type) VALUES ((SELECT user_id from app_users where email='alina.nanu@yahoo.com'), 'alinutza', 'apple_is_my_life', 'admin_ship');
 INSERT INTO accounts (user_id, username, password, account_type) VALUES ((SELECT user_id from app_users where email='enaki.vasile@aol.com'), 'enaki', 'vasile', 'client');
 /* orders */

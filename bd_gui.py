@@ -49,13 +49,11 @@ class BdGui(tk.Tk):
         self.show_frame('HomePage')
         log.info("Recreate Frames succesfully")
 
-
     def show_frame(self, name):
         frame = self.frames[name]
         frame.tkraise()
 
     def run_query(self, query):
-
         cursor = self.conn.cursor()
         cursor.execute(query)
         try:
@@ -66,7 +64,6 @@ class BdGui(tk.Tk):
             self.conn.commit()
             cursor.close()
             return None
-
         return query_results
 
     def get_columns_name(self, table_name):

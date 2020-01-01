@@ -10,29 +10,29 @@ CREATE TABLE locations(
 
 CREATE TABLE shops(
     shop_id NUMBER(4) NOT NULL,
-    shop_name VARCHAR2(20),
-    location_id NUMBER(4),
+    shop_name VARCHAR2(20) NOT NULL,
+    location_id NUMBER(4) NOT NULL,
     CONSTRAINT shop_id_pk PRIMARY KEY(shop_id),
     CONSTRAINT shop_location_id_fk FOREIGN KEY (location_id) REFERENCES locations,
     CONSTRAINT shop_uk UNIQUE (shop_name, location_id));
     
 CREATE TABLE products(
     product_id NUMBER(4) NOT NULL,
-    product_name VARCHAR2(20),
-    price NUMBER(6, 2),
-    shop_id NUMBER(4),
+    product_name VARCHAR2(20) NOT NULL,
+    price NUMBER(6, 2) NOT NULL,
+    shop_id NUMBER(4) NOT NULL,
     description VARCHAR2(100),
     CONSTRAINT product_id_pk PRIMARY KEY(product_id),
     CONSTRAINT product_shop_id_fk FOREIGN KEY(shop_id) REFERENCES shops,
-    CONSTRAINT price_range_ch CHECK (price > 0 and price < 999999),
+    CONSTRAINT price_range_ch CHECK (price > 0 and price < 1000000),
     CONSTRAINT product_uk UNIQUE (product_name, price, shop_id, description));
     
 CREATE TABLE shipping_methods(
     shipping_id NUMBER(4) NOT NULL,
-    provider VARCHAR2(100),
-    delivering_price NUMBER(6,2),
+    provider VARCHAR2(100) NOT NULL,
+    delivering_price NUMBER(6,2) NOT NULL,
     CONSTRAINT shipping_id_pk PRIMARY KEY(shipping_id),
-    CONSTRAINT delivering_price_range_ch CHECK (delivering_price > 0 and delivering_price < 999999),
+    CONSTRAINT delivering_price_range_ch CHECK (delivering_price > 0 and delivering_price < 1000000),
     CONSTRAINT shipping_uk UNIQUE (provider));
     
 CREATE TABLE app_users(
@@ -50,7 +50,9 @@ CREATE TABLE accounts(
     username VARCHAR2(30) NOT NULL UNIQUE,
     password VARCHAR2(100) NOT NULL,
     account_type VARCHAR2(10) NOT NULL,
-    CONSTRAINT account_user_id_fk FOREIGN KEY(user_id) REFERENCES app_users
+    CONSTRAINT account_id_pk PRIMARY KEY(user_id),
+    CONSTRAINT account_user_id_fk FOREIGN KEY(user_id) REFERENCES app_users,
+    CONSTRAINT account_user_pass_ch CHECK (length(password) >= 6)
 );
     
 CREATE TABLE orders(
@@ -58,15 +60,15 @@ CREATE TABLE orders(
     user_id NUMBER(4) NOT NULL,
     shipping_id NUMBER(4) NOT NULL,
     product_id NUMBER(4) NOT NULL,
-    quantity NUMBER(4),
-    total_amount NUMBER(10, 2),
+    quantity NUMBER(4) NOT NULL,
+    total_amount NUMBER(10, 2) NOT NULL,
     date_ordered DATE DEFAULT sysdate NOT NULL,
     CONSTRAINT order_id_pk PRIMARY KEY(order_id), 
     CONSTRAINT order_user_id_fk FOREIGN KEY(user_id) REFERENCES app_users,
     CONSTRAINT order_shipping_id_fk FOREIGN KEY(shipping_id) REFERENCES shipping_methods,
     CONSTRAINT order_product_id_fk FOREIGN KEY(product_id) REFERENCES products,
-    CONSTRAINT quantity_range_ch CHECK (quantity > 0 and quantity < 9999),
-    CONSTRAINT amount_range_ch CHECK (total_amount > 0 and total_amount < 9999999999)
+    CONSTRAINT quantity_range_ch CHECK (quantity > 0 and quantity < 10000),
+    CONSTRAINT amount_range_ch CHECK (total_amount > 0 and total_amount < 10000000000)
 );
     
 CREATE SEQUENCE location_sequence_incrementer START WITH 1 INCREMENT BY 1;   

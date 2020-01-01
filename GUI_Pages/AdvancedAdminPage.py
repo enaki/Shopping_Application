@@ -8,6 +8,7 @@ import sys
 FORMAT = '[%(asctime)s] [%(levelname)s] : %(message)s'
 log.basicConfig(stream=sys.stdout, level=log.DEBUG, format=FORMAT)
 
+
 class AdvancedAdminPage(TitlePage):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)

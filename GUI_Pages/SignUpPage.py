@@ -221,6 +221,7 @@ class SignUpPage(TitlePage):
             return
         username = username.strip()
 
+
         if not self.string_length_is_okay(password, text='Password', length=100):
             return
         if not self.string_length_is_okay(user_level, text='User Level', length=10):
@@ -256,7 +257,7 @@ class SignUpPage(TitlePage):
 
         query = "INSERT INTO app_users (first_name, last_name, location_id, email, phone) VALUES ('{}', '{}', {}, '{}', '{}')".format(first_name, last_name, location_id, email, phone)
         self.controller.run_query(query)
-        user_id = self.get_user_id_by_email(self.email_entry.get())
+        user_id = self.get_user_id_by_email(self.email_entry.get().strip())
         log.info("User Id Created : {}".format(user_id))
 
         # -------Use encryption when sending data across internet
