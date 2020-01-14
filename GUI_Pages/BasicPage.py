@@ -32,8 +32,8 @@ class TitlePage(tk.Frame):
             row=0, column=1, sticky='w')
 
     @staticmethod
-    def is_word_letters_and_spaces(string):
-        if all(x.isalpha() or x.isspace() for x in string):
+    def is_word_letters_and_spaces(string, additional_characters=''):
+        if all(x.isalpha() or x.isspace() or x in additional_characters for x in string):
             return True
         return False
 
@@ -106,6 +106,7 @@ class TitlePage(tk.Frame):
                 street, city, country)
             query_select = self.controller.run_query(location_id_query)
         return query_select[0][0]
+
 
 class BasicPage(TitlePage):
     def __init__(self, parent, controller):

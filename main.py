@@ -1,5 +1,6 @@
 from bd_gui import BdGui
 
+
 def main():
     app = BdGui()
     app.geometry("1280x768")

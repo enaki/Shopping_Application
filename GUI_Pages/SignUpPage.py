@@ -5,7 +5,7 @@ import logging as log
 import sys
 
 from GUI_Pages.BasicPage import TitlePage
-from Utilities.Cipher import Cipher
+from Utilities.Cipher import Cipher, get_hash
 
 FORMAT = '[%(asctime)s] [%(levelname)s] : %(message)s'
 log.basicConfig(stream=sys.stdout, level=log.DEBUG, format=FORMAT)
@@ -221,7 +221,6 @@ class SignUpPage(TitlePage):
             return
         username = username.strip()
 
-
         if not self.string_length_is_okay(password, text='Password', length=100):
             return
         if not self.string_length_is_okay(user_level, text='User Level', length=10):
@@ -235,7 +234,7 @@ class SignUpPage(TitlePage):
             from tkinter import messagebox
             messagebox.showinfo("Country Name Error", "Country Name should contains only letters and spaces")
             return
-        if not self.is_word_letters_and_spaces(city):
+        if not self.is_word_letters_and_spaces(city, '-'):
             from tkinter import messagebox
             messagebox.showinfo("City Name Error", "City Name should contains only letters and spaces")
             return
@@ -252,7 +251,7 @@ class SignUpPage(TitlePage):
         first_name = first_name.replace('\'', '\'\'')
         email = email.replace('\'', '\'\'')
         username = username.replace('\'', '\'\'')
-        password = password.replace('\'', '\'\'')
+        #password = password.replace('\'', '\'\'')
         user_level = user_level.replace('\'', '\'\'')
 
         query = "INSERT INTO app_users (first_name, last_name, location_id, email, phone) VALUES ('{}', '{}', {}, '{}', '{}')".format(first_name, last_name, location_id, email, phone)
@@ -267,10 +266,15 @@ class SignUpPage(TitlePage):
         # log.info("Password decrypted: {}".format(password))
         # end encryption and decryption part
 
+        # --------Get hash of password
+        password = get_hash(password)
+        log.info("Password Hash: {}".format(password))
+
         query = "INSERT INTO accounts (user_id, username, password, account_type) VALUES ({}, '{}', '{}', '{}')".format(user_id[0], username, password, user_level)
         self.controller.run_query(query)
         from tkinter import messagebox
         messagebox.showinfo("Sign Up", "Account Created Succesfully")
+        self.controller.show_frame('LoginPage')
 
     def on_back(self):
         self.controller.show_frame("LoginPage")

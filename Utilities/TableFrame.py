@@ -63,7 +63,6 @@ class TableFrame(tk.Frame):
         except ValueError:
             return False
 
-
     def my_func(self, tuple):
         return float(tuple[0])
 
@@ -72,7 +71,7 @@ class TableFrame(tk.Frame):
         # grab values to sort
         data = [(tree.set(child, col), child) for child in tree.get_children('')]
         # reorder data
-        if data and self.is_float(data[0][0]):
+        if data and all([self.is_float(element) for element in data[0]]):
             data.sort(reverse=descending, key=self.my_func)
         else:
             data.sort(reverse=descending)

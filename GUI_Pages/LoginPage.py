@@ -5,7 +5,7 @@ import logging as log
 import sys
 
 from GUI_Pages.BasicPage import TitlePage
-from Utilities.Cipher import Cipher
+from Utilities.Cipher import Cipher, get_hash
 
 FORMAT = '[%(asctime)s] [%(levelname)s] : %(message)s'
 log.basicConfig(stream=sys.stdout, level=log.DEBUG, format=FORMAT)
@@ -84,6 +84,10 @@ class LoginPage(TitlePage):
         #log.info("Password decrypted: {}".format(password))
         #end encryption and decryption part
 
+        # --------Get hash of password
+        password = get_hash(password)
+        log.info("Password Hash: {}".format(password))
+
         query = "SELECT u.user_id, u.first_name, u.last_name, u.location_id, u.email, u.phone, a.account_type from app_users u, accounts a where u.user_id = a.user_id and a.username='{}' and a.password='{}'".format(username, password)
         user_info = [item for t in self.controller.run_query(query) for item in t]
         if user_info:
@@ -105,7 +109,6 @@ class LoginPage(TitlePage):
             log.info("Login Failed Incorect username as password")
             from tkinter import messagebox
             messagebox.showinfo("Login Failed", "Wrong username or password")
-
 
     def on_sign_up(self):
         self.controller.show_frame("SignUpPage")
