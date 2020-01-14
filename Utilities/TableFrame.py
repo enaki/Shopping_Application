@@ -71,7 +71,7 @@ class TableFrame(tk.Frame):
         # grab values to sort
         data = [(tree.set(child, col), child) for child in tree.get_children('')]
         # reorder data
-        if data and all([self.is_float(element) for element in data[0]]):
+        if data and all([self.is_float(element[0]) for element in data]):
             data.sort(reverse=descending, key=self.my_func)
         else:
             data.sort(reverse=descending)

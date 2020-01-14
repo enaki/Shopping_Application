@@ -159,11 +159,11 @@ class ShippingPage(BasicPage):
         if price_min == '' and price_max == '':
             self.populate_the_table_with_all_values()
         else:
-            if not self.is_number(price_min):
+            if not self.is_number(price_min, zero_permited=True):
                 from tkinter import messagebox
                 messagebox.showinfo("Insert Error", "Price MIN is not number")
                 return
-            if not self.is_number(price_max):
+            if not self.is_number(price_max, zero_permited=True):
                 from tkinter import messagebox
                 messagebox.showinfo("Insert Error", "Price MAX is not number")
                 return
