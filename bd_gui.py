@@ -25,7 +25,7 @@ class BdGui(tk.Tk):
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
 
-        self.conn = cx_Oracle.connect("enaki", "dell5567", "localhost/xe")
+        self.conn = cx_Oracle.connect("tema_bd", "tema_bd", "localhost/xe")
 
         self.user_info = {}
 

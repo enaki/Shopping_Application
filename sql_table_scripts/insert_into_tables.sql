@@ -92,6 +92,9 @@ INSERT INTO app_users (first_name, last_name, location_id, email, phone) VALUES 
 INSERT INTO app_users (first_name, last_name, location_id, email, phone) VALUES ('Vasile','Enachi',
     (SELECT location_id FROM locations WHERE street_address='Str. Marinescu 18B' AND city='Ungheni' AND country='Republica Moldova'),
     'enaki.vasile@aol.com', '0746593368');
+INSERT INTO app_users (first_name, last_name, location_id, email, phone) VALUES ('Georgiana','Atomei',
+    (SELECT location_id FROM locations WHERE street_address='Str. Tudor Vladimirescu' AND city='Iasi' AND country='Romania'),
+    'georgiana.atomei@gmail.com', '0701234444');
 
 /* accounts */
 INSERT INTO accounts (user_id, username, password, account_type) VALUES ((SELECT user_id from app_users where email='marin.moisii@yahoo.com'), 'marin', 'a00b68b047f33d36e7c02ccb42095e90', 'admin');
@@ -103,6 +106,7 @@ INSERT INTO accounts (user_id, username, password, account_type) VALUES ((SELECT
 INSERT INTO accounts (user_id, username, password, account_type) VALUES ((SELECT user_id from app_users where email='anisoara.nanu@yahoo.com'), 'anisoara', '14c107aa15c02281cbf495afe3943664', 'admin');
 INSERT INTO accounts (user_id, username, password, account_type) VALUES ((SELECT user_id from app_users where email='alina.nanu@yahoo.com'), 'alinutza', '507006bb84dec723883929aba845e9d1', 'admin_ship');
 INSERT INTO accounts (user_id, username, password, account_type) VALUES ((SELECT user_id from app_users where email='enaki.vasile@aol.com'), 'enaki', 'a45913ef0ed481ab9c5f03481d25d69d', 'client');
+INSERT INTO accounts (user_id, username, password, account_type) VALUES ((SELECT user_id from app_users where email='georgiana.atomei@gmail.com'), 'georgiana', 'c694707b1555d6f0c317a68fed0f8615', 'admin_shop');
 /* orders */
 
 INSERT INTO orders (user_id, shipping_id, product_id, quantity, total_amount) VALUES

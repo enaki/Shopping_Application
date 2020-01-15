@@ -103,9 +103,11 @@ class SignUpPage(TitlePage):
         self.back_button.grid(row=2, column=0, padx=15, pady=15, sticky='w')
 
     def country_combo_update(self, event):
+        self.city_combobox.delete(0, tk.END)
         self.city_combobox['values'] = self.get_cities(event.widget.get())
 
     def city_combo_update(self, event):
+        self.street_combobox.delete(0, tk.END)
         self.street_combobox['values'] = self.get_streets(event.widget.get(), self.country_combobox.get())
 
     @staticmethod

@@ -30,7 +30,8 @@ users = {
     'andrei': 'dorcu0',
     'anisoara': 'i_like_to_destroy_things',
     'alinutza': 'apple_is_my_life',
-    'enaki': 'vasile'
+    'enaki': 'vasile',
+    'georgiana': 'atomei'
 }
 
 
