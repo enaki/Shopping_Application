@@ -15,6 +15,13 @@ FORMAT = '[%(asctime)s] [%(levelname)s] : %(message)s'
 log.basicConfig(stream=sys.stdout, level=log.DEBUG, format=FORMAT)
 
 
+cx_Oracle.init_oracle_client(lib_dir="D:\Programs\oracle\instantclient_19_8")
+bd_config = {
+    "username": "tema_bd",
+    "password": "tema_bd"
+}
+
+
 class BdGui(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -25,7 +32,7 @@ class BdGui(tk.Tk):
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
 
-        self.conn = cx_Oracle.connect("tema_bd", "tema_bd", "localhost/xe")
+        self.conn = cx_Oracle.connect(bd_config["username"], bd_config["password"], "localhost/xe")
 
         self.user_info = {}
 
